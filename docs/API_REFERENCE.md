@@ -149,7 +149,7 @@ template <uint16_t NUM_LEDS, uint8_t DATA_PIN = 5>
 ```cpp
 #include <LEDDisplayHardware.h>
 
-LEDDisplayHardware<60, 5> display;  // 60 LEDs on pin 5
+LEDDisplayHardware<90, 5> display;  // 90 LEDs on pin 5
 
 void setup() {
     display.begin();
@@ -158,12 +158,12 @@ void setup() {
 
 ### Additional Methods
 
-#### `CRGB* getRawLEDs()`
-Returns pointer to internal FastLED CRGB array for advanced FastLED features.
+#### `Adafruit_NeoPixel* getNeoPixel()`
+Returns pointer to internal NeoPixel object for advanced features.
 
 ```cpp
-CRGB* leds = display.getRawLEDs();
-leds[0].fadeToBlackBy(64);  // Use FastLED functions
+Adafruit_NeoPixel* strip = display.getNeoPixel();
+// Use NeoPixel-specific functions if needed
 ```
 
 ---
@@ -185,7 +185,7 @@ template <uint16_t NUM_LEDS>
 ```cpp
 #include <LEDDisplaySimulator.h>
 
-LEDDisplaySimulator<60> display;  // 60 virtual LEDs
+LEDDisplaySimulator<90> display;  // 90 virtual LEDs
 
 void setup() {
     display.begin();  // Opens serial at 115200 baud
@@ -207,10 +207,10 @@ Use preprocessor directives to switch between hardware and simulator:
 
 #ifdef HARDWARE_MODE
   #include <LEDDisplayHardware.h>
-  LEDDisplayHardware<60, 5> display;
+  LEDDisplayHardware<90, 5> display;
 #else
   #include <LEDDisplaySimulator.h>
-  LEDDisplaySimulator<60> display;
+  LEDDisplaySimulator<90> display;
 #endif
 
 void setup() {
@@ -300,18 +300,20 @@ void fadeAll(uint8_t amount) {
 ## Troubleshooting
 
 ### LEDs not responding (Hardware)
-- Check wiring: Data pin, 5V, GND
+- **IMPORTANT**: Ensure common ground between ESP32 and LED power supply
+- Check wiring: Data pin (GPIO 5), Power (5V or 12V), GND
 - Verify correct GPIO pin in template parameter
-- Ensure adequate power supply (60mA per LED at full white)
+- Ensure adequate power supply (60mA per LED at full white for 5V strips)
 - Check `build_flags` includes `-DHARDWARE_MODE=1`
 
 ### No data in visualizer (Simulator)
 - Verify serial connection in visualizer
 - Check baud rate is 115200
 - Ensure `SIMULATOR_MODE=1` build flag is set
-- Look for "LED Simulator Ready" message in serial monitor
+- Refresh browser page after making JavaScript changes
+- Use Chrome, Edge, or Opera (Web Serial API required)
 
 ### Colors are wrong
-- Check color order in FastLED (GRB vs RGB vs BGR)
-- Verify LED chipset (WS2812B vs WS2815 vs SK6812)
+- Using Adafruit NeoPixel with NEO_GRB + NEO_KHZ800
+- Verify LED chipset (WS2812B vs WS2815)
 - Some strips have different color orders

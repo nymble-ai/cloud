@@ -88,7 +88,7 @@ The system uses an **abstraction layer** pattern:
 └─────────┘        └──────────┘
 ```
 
-Your animation code calls a unified API. The implementation switches between real hardware (FastLED) and simulator (serial protocol) based on compile flags.
+Your animation code calls a unified API. The implementation switches between real hardware (Adafruit NeoPixel) and simulator (serial protocol) based on compile flags.
 
 ## Usage Examples
 
@@ -99,10 +99,10 @@ Your animation code calls a unified API. The implementation switches between rea
 
 #ifdef HARDWARE_MODE
   #include <LEDDisplayHardware.h>
-  LEDDisplayHardware<60, 5> display;
+  LEDDisplayHardware<90, 5> display;
 #else
   #include <LEDDisplaySimulator.h>
-  LEDDisplaySimulator<60> display;
+  LEDDisplaySimulator<90> display;
 #endif
 
 void setup() {

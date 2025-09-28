@@ -58,8 +58,8 @@ ESP32                    LED Strip
 
 1. **Separate Power for LEDs**
    - Never power LEDs from ESP32's 5V pin (insufficient current)
-   - Use external 5V power supply rated for total LED current
-   - Connect power supply GND to ESP32 GND (common ground)
+   - Use external 5V power supply (for 5V strips) or 12V (for 12V WS2815 strips)
+   - **CRITICAL**: Connect power supply GND to ESP32 GND (common ground required!)
 
 2. **Data Line**
    - Connect ESP32 GPIO pin directly to LED strip DIN
@@ -84,7 +84,7 @@ ESP32                    LED Strip
 
 In your sketch:
 ```cpp
-LEDDisplayHardware<60, 16> display;  // 60 LEDs on GPIO 16
+LEDDisplayHardware<90, 16> display;  // 90 LEDs on GPIO 16
 ```
 
 ## LED Strip Specifications
@@ -203,10 +203,11 @@ void loop() {
 ## Troubleshooting
 
 ### No LEDs light up
-- **Power**: Check 5V supply is on and connected
-- **Polarity**: Verify 5V/GND not reversed
+- **COMMON GROUND**: Most common issue - ensure ESP32 GND connected to power supply GND
+- **Power**: Check 5V (or 12V for 12V strips) supply is on and connected
+- **Polarity**: Verify power/GND not reversed
 - **Data direction**: Ensure data connected to DIN, not DOUT
-- **Code**: Verify GPIO pin matches wiring
+- **Code**: Verify GPIO pin matches wiring (default is GPIO 5)
 
 ### First few LEDs work, rest don't
 - **Power**: Insufficient power supply or thin wires
@@ -228,11 +229,12 @@ void loop() {
 - **Solution**: Cut out failed LED, reconnect data line
 
 ### Colors are wrong (R/G/B swapped)
-- **Color order**: WS2812B is usually GRB, not RGB
-- **Fix in code**:
+- **Library**: Now using Adafruit NeoPixel with NEO_GRB + NEO_KHZ800
+- **Color order**: WS2812B/WS2815 usually use GRB
+- **If needed, modify in** `LEDDisplayHardware.h`:
 ```cpp
-FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
-                                    // ^^^ Change to RGB or BGR
+strip(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800)
+// Change NEO_GRB to NEO_RGB or NEO_BGR if needed
 ```
 
 ## Safety Considerations

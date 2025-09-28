@@ -49,10 +49,10 @@ Create `firmware/examples/05_MyAnimation/05_MyAnimation.ino`:
 
 #ifdef HARDWARE_MODE
   #include <LEDDisplayHardware.h>
-  LEDDisplayHardware<60, 5> display;
+  LEDDisplayHardware<90, 5> display;
 #else
   #include <LEDDisplaySimulator.h>
-  LEDDisplaySimulator<60> display;
+  LEDDisplaySimulator<90> display;
 #endif
 
 void setup() {
@@ -387,10 +387,10 @@ build_flags = -DSIMULATOR_MODE=1
 ```cpp
 #ifdef HARDWARE_MODE
   #include <LEDDisplayHardware.h>
-  LEDDisplayHardware<60, 5> display;
+  LEDDisplayHardware<90, 5> display;
 #else
   #include <LEDDisplaySimulator.h>
-  LEDDisplaySimulator<60> display;
+  LEDDisplaySimulator<90> display;
 #endif
 ```
 
@@ -408,10 +408,10 @@ Comment/uncomment as needed:
 
 #ifdef USE_HARDWARE
   #include <LEDDisplayHardware.h>
-  LEDDisplayHardware<60, 5> display;
+  LEDDisplayHardware<90, 5> display;
 #else
   #include <LEDDisplaySimulator.h>
-  LEDDisplaySimulator<60> display;
+  LEDDisplaySimulator<90> display;
 #endif
 ```
 

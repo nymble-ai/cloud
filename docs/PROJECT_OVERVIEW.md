@@ -24,7 +24,8 @@ This project solves these problems by creating a simulator that runs the same an
 ### LED Hardware
 - **Supported Models**: WS2812B, WS2815
 - **Protocol**: Addressable RGB LEDs (one-wire control)
-- **Common Libraries**: FastLED, Adafruit NeoPixel
+- **Library Used**: Adafruit NeoPixel (hardware), Custom serial protocol (simulator)
+- **Default Configuration**: 90 LEDs on GPIO pin 5
 - **Configurations**: LED strips and matrices of various sizes
 
 ## Architecture
@@ -67,19 +68,17 @@ The system uses an abstraction layer pattern to decouple animation logic from ha
 
 ```cpp
 class LEDDisplay {
-private:
-  CRGB* leds;
-  int count;
-
 public:
-  void setPixel(int index, uint8_t r, uint8_t g, uint8_t b);
-  void show();    // Calls FastLED.show()
-  void clear();
-  int getPixelCount();
+  virtual void setPixel(uint16_t index, uint8_t r, uint8_t g, uint8_t b) = 0;
+  virtual void show() = 0;
+  virtual void clear() = 0;
+  virtual void setBrightness(uint8_t brightness) = 0;
+  virtual uint16_t getPixelCount() = 0;
+  // ... other virtual methods
 };
 ```
 
-The hardware implementation wraps existing LED libraries (FastLED/NeoPixel) and communicates directly with GPIO pins.
+The hardware implementation (`LEDDisplayHardware`) wraps Adafruit NeoPixel library and communicates directly with GPIO pins.
 
 ### Simulator Implementation
 
@@ -88,10 +87,10 @@ The simulator implements the same API but:
 - Sends state updates to a visualizer (web-based or desktop)
 - Renders LEDs as visual elements on screen
 
-Communication options:
-1. **Serial Protocol**: Simulator sends LED state over serial/USB
-2. **WebSocket**: Real-time updates to web-based visualizer
-3. **Direct Rendering**: If simulator and visualizer are same process
+Communication:
+- **Serial Protocol**: Binary protocol at 115200 baud
+- **Web Serial API**: Browser reads serial data directly from ESP32
+- **Frame Rate**: ~27-28 FPS for 90 LEDs
 
 ## Project Structure (Proposed)
 
