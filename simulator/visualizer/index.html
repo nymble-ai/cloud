@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LED Simulator</h1>
+            <p class="subtitle">Hardware-accurate visualization for WS2812B/WS2815</p>
+        </header>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <section class="panel-section">
+                    <h2>Connection</h2>
+                    <button id="connectBtn" class="btn btn-primary">Connect to Serial</button>
+                    <div id="connectionStatus" class="status status-disconnected">Disconnected</div>
+                    <div id="fps" class="stats">FPS: 0</div>
+                </section>
+
+                <section class="panel-section">
+                    <h2>Layout</h2>
+                    <label>
+                        Type:
+                        <select id="layoutType">
+                            <option value="strip">LED Strip</option>
+                            <option value="matrix">Matrix</option>
+                            <option value="ring">Ring</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        LED Count:
+                        <input type="number" id="ledCount" value="60" min="1" max="1000">
+                    </label>
+
+                    <div id="stripControls" class="layout-specific">
+                        <label>
+                            Orientation:
+                            <select id="orientation">
+                                <option value="horizontal">Horizontal</option>
+                                <option value="vertical">Vertical</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div id="matrixControls" class="layout-specific" style="display: none;">
+                        <label>
+                            Width:
+                            <input type="number" id="matrixWidth" value="8" min="1" max="64">
+                        </label>
+                        <label>
+                            Height:
+                            <input type="number" id="matrixHeight" value="8" min="1" max="64">
+                        </label>
+                        <label>
+                            <input type="checkbox" id="serpentine" checked>
+                            Serpentine Layout
+                        </label>
+                    </div>
+
+                    <div id="ringControls" class="layout-specific" style="display: none;">
+                        <label>
+                            Radius:
+                            <input type="number" id="ringRadius" value="150" min="50" max="500">
+                        </label>
+                    </div>
+
+                    <button id="applyLayoutBtn" class="btn btn-secondary">Apply Layout</button>
+                </section>
+
+                <section class="panel-section">
+                    <h2>Appearance</h2>
+                    <label>
+                        LED Size:
+                        <input type="range" id="ledSize" min="5" max="40" value="20">
+                        <span id="ledSizeValue">20</span>px
+                    </label>
+
+                    <label>
+                        LED Spacing:
+                        <input type="range" id="ledSpacing" min="0" max="20" value="5">
+                        <span id="ledSpacingValue">5</span>px
+                    </label>
+
+                    <label>
+                        Glow Intensity:
+                        <input type="range" id="glowIntensity" min="0" max="100" value="30">
+                        <span id="glowIntensityValue">30</span>%
+                    </label>
+
+                    <label>
+                        <input type="checkbox" id="showIndices">
+                        Show LED Indices
+                    </label>
+
+                    <label>
+                        Background:
+                        <input type="color" id="backgroundColor" value="#1a1a1a">
+                    </label>
+                </section>
+
+                <section class="panel-section">
+                    <h2>Test Mode</h2>
+                    <p class="help-text">Test visualizer without ESP32 connection</p>
+                    <button id="testRainbow" class="btn btn-secondary">Rainbow</button>
+                    <button id="testChase" class="btn btn-secondary">Chase</button>
+                    <button id="testRandom" class="btn btn-secondary">Random</button>
+                    <button id="testClear" class="btn btn-secondary">Clear</button>
+                </section>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="ledCanvas"></canvas>
+                <div id="canvasOverlay" class="overlay">
+                    <p>Click "Connect to Serial" to begin</p>
+                    <p class="help-text">Or use Test Mode to preview layouts</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>LED Simulator v1.0 | <a href="../../docs/PROJECT_OVERVIEW.md" target="_blank">Documentation</a></p>
+        </footer>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

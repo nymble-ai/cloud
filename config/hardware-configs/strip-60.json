@@ -1,0 +1,11 @@
+{
+  "name": "60 LED Strip",
+  "type": "strip",
+  "count": 60,
+  "pin": 5,
+  "chipset": "WS2812B",
+  "colorOrder": "GRB",
+  "voltage": 5,
+  "maxCurrent": 3000,
+  "description": "Standard 60 LED/meter WS2812B strip, 1 meter length"
+}

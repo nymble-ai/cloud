@@ -1,0 +1,21 @@
+{
+  "visualizer": {
+    "ledSize": 20,
+    "ledSpacing": 5,
+    "glowIntensity": 0.3,
+    "glowRadius": 10,
+    "backgroundColor": "#1a1a1a",
+    "offLedColor": "#222222",
+    "showIndices": false,
+    "fps": 60
+  },
+  "serial": {
+    "baudRate": 115200,
+    "autoConnect": false
+  },
+  "layout": {
+    "type": "strip",
+    "count": 60,
+    "orientation": "horizontal"
+  }
+}

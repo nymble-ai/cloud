@@ -1,0 +1,28 @@
+{
+  "name": "led-simulator",
+  "version": "1.0.0",
+  "description": "Hardware-accurate LED simulator for Arduino/ESP32",
+  "scripts": {
+    "sim": "cd simulator/visualizer && python3 -m http.server 8080",
+    "bridge": "cd simulator/bridge && node server.js",
+    "build:hardware": "cd firmware && pio run -e esp32_hardware",
+    "build:simulator": "cd firmware && pio run -e esp32_simulator",
+    "build:matrix": "cd firmware && pio run -e esp32_matrix",
+    "upload:hardware": "cd firmware && pio run -e esp32_hardware -t upload",
+    "upload:simulator": "cd firmware && pio run -e esp32_simulator -t upload",
+    "monitor": "cd firmware && pio device monitor"
+  },
+  "keywords": [
+    "led",
+    "ws2812b",
+    "ws2815",
+    "esp32",
+    "arduino",
+    "simulator",
+    "fastled"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}

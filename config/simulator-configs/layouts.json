@@ -1,0 +1,58 @@
+{
+  "layouts": [
+    {
+      "id": "strip-horizontal",
+      "name": "LED Strip (Horizontal)",
+      "type": "strip",
+      "defaultCount": 60,
+      "orientation": "horizontal",
+      "description": "Single row of LEDs arranged horizontally"
+    },
+    {
+      "id": "strip-vertical",
+      "name": "LED Strip (Vertical)",
+      "type": "strip",
+      "defaultCount": 60,
+      "orientation": "vertical",
+      "description": "Single column of LEDs arranged vertically"
+    },
+    {
+      "id": "matrix-8x8",
+      "name": "8x8 Matrix",
+      "type": "matrix",
+      "width": 8,
+      "height": 8,
+      "defaultCount": 64,
+      "serpentine": true,
+      "description": "8x8 LED matrix with serpentine layout"
+    },
+    {
+      "id": "matrix-16x16",
+      "name": "16x16 Matrix",
+      "type": "matrix",
+      "width": 16,
+      "height": 16,
+      "defaultCount": 256,
+      "serpentine": true,
+      "description": "16x16 LED matrix with serpentine layout"
+    },
+    {
+      "id": "matrix-32x8",
+      "name": "32x8 Matrix",
+      "type": "matrix",
+      "width": 32,
+      "height": 8,
+      "defaultCount": 256,
+      "serpentine": true,
+      "description": "32x8 LED matrix panel"
+    },
+    {
+      "id": "ring-60",
+      "name": "60 LED Ring",
+      "type": "ring",
+      "defaultCount": 60,
+      "radius": 150,
+      "description": "Circular arrangement of 60 LEDs"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "144 LED Strip",
+  "type": "strip",
+  "count": 144,
+  "pin": 5,
+  "chipset": "WS2812B",
+  "colorOrder": "GRB",
+  "voltage": 5,
+  "maxCurrent": 8640,
+  "description": "High density 144 LED/meter WS2812B strip, 1 meter length"
+}

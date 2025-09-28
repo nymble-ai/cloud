@@ -1,0 +1,14 @@
+{
+  "name": "8x8 LED Matrix",
+  "type": "matrix",
+  "count": 64,
+  "width": 8,
+  "height": 8,
+  "pin": 5,
+  "chipset": "WS2812B",
+  "colorOrder": "GRB",
+  "serpentine": true,
+  "voltage": 5,
+  "maxCurrent": 3840,
+  "description": "8x8 WS2812B LED matrix panel"
+}

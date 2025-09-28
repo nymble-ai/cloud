@@ -1,0 +1,14 @@
+.pio
+.vscode/
+.pioenvs
+.piolibdeps
+.clang_complete
+.gcc-flags.json
+*.pyc
+__pycache__/
+node_modules/
+*.log
+.DS_Store
+.env
+firmware/.pio/
+firmware/.vscode/

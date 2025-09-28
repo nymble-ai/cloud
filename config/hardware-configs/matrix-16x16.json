@@ -1,0 +1,14 @@
+{
+  "name": "16x16 LED Matrix",
+  "type": "matrix",
+  "count": 256,
+  "width": 16,
+  "height": 16,
+  "pin": 5,
+  "chipset": "WS2812B",
+  "colorOrder": "GRB",
+  "serpentine": true,
+  "voltage": 5,
+  "maxCurrent": 15360,
+  "description": "16x16 WS2812B LED matrix panel, requires 5V power supply with adequate current"
+}
