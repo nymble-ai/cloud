@@ -2,50 +2,49 @@
 #define LED_DISPLAY_HARDWARE_H
 
 #include "LEDDisplay.h"
-#include <FastLED.h>
+#include <Adafruit_NeoPixel.h>
 
 template <uint16_t NUM_LEDS, uint8_t DATA_PIN = 5>
 class LEDDisplayHardware : public LEDDisplay {
 private:
-    CRGB leds[NUM_LEDS];
+    Adafruit_NeoPixel strip;
     uint8_t brightness;
 
 public:
-    LEDDisplayHardware() : brightness(255) {}
+    LEDDisplayHardware() :
+        strip(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800),
+        brightness(50) {}  // Start with low brightness like your working code
 
     void begin() override {
-        // WS2815 - try both WS2815 specific or WS2812B protocol
-        // Using GRB which matches your working code's NEO_GRB
-        FastLED.addLeds<WS2815, DATA_PIN, GRB>(leds, NUM_LEDS);
-        FastLED.setBrightness(brightness);
-        FastLED.setMaxPowerInVoltsAndMilliamps(5, 3000); // Safety limit
+        strip.begin();
+        strip.setBrightness(brightness);
         clear();
         show();
     }
 
     void setPixel(uint16_t index, uint8_t r, uint8_t g, uint8_t b) override {
         if (index < NUM_LEDS) {
-            leds[index] = CRGB(r, g, b);
+            strip.setPixelColor(index, strip.Color(r, g, b));
         }
     }
 
     void setPixelColor(uint16_t index, uint32_t color) override {
         if (index < NUM_LEDS) {
-            leds[index] = CRGB(Red(color), Green(color), Blue(color));
+            strip.setPixelColor(index, color);
         }
     }
 
     void show() override {
-        FastLED.show();
+        strip.show();
     }
 
     void clear() override {
-        FastLED.clear();
+        strip.clear();
     }
 
     void setBrightness(uint8_t b) override {
         brightness = b;
-        FastLED.setBrightness(b);
+        strip.setBrightness(b);
     }
 
     uint8_t getBrightness() override {
@@ -58,21 +57,22 @@ public:
 
     uint32_t getPixel(uint16_t index) override {
         if (index < NUM_LEDS) {
-            return Color(leds[index].r, leds[index].g, leds[index].b);
+            return strip.getPixelColor(index);
         }
         return 0;
     }
 
     void fill(uint8_t r, uint8_t g, uint8_t b) override {
-        fill_solid(leds, NUM_LEDS, CRGB(r, g, b));
+        strip.fill(strip.Color(r, g, b), 0, NUM_LEDS);
     }
 
     void fillColor(uint32_t color) override {
-        fill_solid(leds, NUM_LEDS, CRGB(Red(color), Green(color), Blue(color)));
+        strip.fill(color, 0, NUM_LEDS);
     }
 
-    CRGB* getRawLEDs() {
-        return leds;
+    // For compatibility with existing code
+    Adafruit_NeoPixel* getNeoPixel() {
+        return &strip;
     }
 };
 
