@@ -2,7 +2,7 @@ export class LEDRenderer {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.leds = [];
+        this.leds = new Array(90).fill(null).map(() => ({ r: 0, g: 0, b: 0 }));
         this.config = {
             ledSize: 20,
             ledSpacing: 5,
@@ -14,7 +14,7 @@ export class LEDRenderer {
         };
         this.layout = {
             type: 'strip',
-            count: 60,
+            count: 90,
             orientation: 'horizontal',
             width: 8,
             height: 8,

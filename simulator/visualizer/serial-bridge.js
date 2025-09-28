@@ -51,9 +51,7 @@ export class SerialBridge {
 
     async startReading() {
         try {
-            const decoder = new TextDecoderStream();
-            this.port.readable.pipeTo(decoder.writable);
-            this.reader = decoder.readable.getReader();
+            this.reader = this.port.readable.getReader();
 
             while (true) {
                 const { value, done } = await this.reader.read();
@@ -61,8 +59,9 @@ export class SerialBridge {
                     break;
                 }
 
+                // value is a Uint8Array of bytes
                 for (let i = 0; i < value.length; i++) {
-                    const byte = value.charCodeAt(i);
+                    const byte = value[i];
                     const leds = this.parser.parse(byte);
 
                     if (leds) {

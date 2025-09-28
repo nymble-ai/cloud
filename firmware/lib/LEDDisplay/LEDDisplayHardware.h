@@ -14,8 +14,11 @@ public:
     LEDDisplayHardware() : brightness(255) {}
 
     void begin() override {
+        // WS2815 uses the same protocol as WS2812B but may have different color order
+        // Using GRB which matches your working code's NEO_GRB
         FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
         FastLED.setBrightness(brightness);
+        FastLED.setMaxPowerInVoltsAndMilliamps(5, 3000); // Safety limit
         clear();
         show();
     }

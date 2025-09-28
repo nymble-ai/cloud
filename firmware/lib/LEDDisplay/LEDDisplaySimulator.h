@@ -39,8 +39,9 @@ public:
         while (!Serial && millis() < 3000) {
             delay(10);
         }
-        Serial.println("LED Simulator Ready");
+        // Don't send text - it will confuse the binary parser
         clear();
+        needsUpdate = true;  // Force initial frame
         show();
     }
 
