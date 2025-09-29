@@ -1,11 +1,14 @@
 import { LEDRenderer } from './renderer.js';
 import { SerialBridge } from './serial-bridge.js';
+import EmbeddedTerminal from './terminal.js';
 
 class LEDSimulatorApp {
     constructor() {
         this.renderer = new LEDRenderer(document.getElementById('ledCanvas'));
         this.serialBridge = null;
         this.isConnected = false;
+        this.terminal = null;
+        this.terminalVisible = false;
 
         this.initElements();
         this.initEventListeners();
@@ -44,7 +47,10 @@ class LEDSimulatorApp {
             testRainbow: document.getElementById('testRainbow'),
             testChase: document.getElementById('testChase'),
             testRandom: document.getElementById('testRandom'),
-            testClear: document.getElementById('testClear')
+            testClear: document.getElementById('testClear'),
+
+            toggleTerminal: document.getElementById('toggleTerminal'),
+            terminalModal: document.getElementById('terminalModal')
         };
     }
 
@@ -76,6 +82,9 @@ class LEDSimulatorApp {
         this.elements.testChase.addEventListener('click', () => this.renderer.testPattern('chase'));
         this.elements.testRandom.addEventListener('click', () => this.renderer.testPattern('random'));
         this.elements.testClear.addEventListener('click', () => this.renderer.clear());
+
+        // Terminal toggle
+        this.elements.toggleTerminal.addEventListener('click', () => this.toggleTerminal());
 
         window.addEventListener('resize', () => {
             this.renderer.resizeCanvas();
@@ -147,6 +156,29 @@ class LEDSimulatorApp {
             await this.disconnect();
         } else {
             await this.connect();
+        }
+    }
+
+    toggleTerminal() {
+        if (!this.terminalVisible) {
+            // Create terminal if it doesn't exist
+            if (!this.terminal) {
+                this.terminal = new EmbeddedTerminal(this.elements.terminalModal);
+                // If we're connected, share the serial port
+                if (this.serialBridge && this.serialBridge.port) {
+                    this.terminal.setSerialPort(this.serialBridge.port);
+                }
+            }
+
+            // Show terminal
+            this.elements.terminalModal.style.display = 'block';
+            this.elements.toggleTerminal.textContent = 'Close Terminal';
+            this.terminalVisible = true;
+        } else {
+            // Hide terminal
+            this.elements.terminalModal.style.display = 'none';
+            this.elements.toggleTerminal.textContent = 'Open Terminal';
+            this.terminalVisible = false;
         }
     }
 

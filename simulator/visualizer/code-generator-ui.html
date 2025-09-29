@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Code Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="code-generator-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Arduino Code Generator</h1>
+            <p class="subtitle">No-code LED strip configuration</p>
+            <div class="nav-tabs">
+                <a href="index.html" class="tab-link">Visualizer</a>
+                <a href="code-generator-ui.html" class="tab-link active">Code Generator</a>
+            </div>
+        </header>
+
+        <div class="generator-container">
+            <!-- Left Panel: Strip Configuration -->
+            <div class="config-panel">
+                <section class="panel-section">
+                    <h2>Quick Start</h2>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" data-preset="simple">Simple</button>
+                        <button class="preset-btn" data-preset="party">Party Mode</button>
+                        <button class="preset-btn" data-preset="ambient">Ambient</button>
+                        <button class="preset-btn" data-preset="christmas">Christmas</button>
+                        <button class="preset-btn" data-preset="fire">Fire</button>
+                    </div>
+                </section>
+
+                <section class="panel-section">
+                    <h2>LED Strips Configuration</h2>
+                    <div id="stripsList" class="strips-list">
+                        <!-- Strips will be added here dynamically -->
+                    </div>
+                    <button id="addStripBtn" class="btn btn-primary">+ Add Strip</button>
+                    <button id="clearAllBtn" class="btn btn-secondary">Clear All</button>
+                </section>
+
+                <section class="panel-section">
+                    <h2>Project Settings</h2>
+                    <label>
+                        Project Name:
+                        <input type="text" id="projectName" value="MyLEDProject">
+                    </label>
+                    <label>
+                        <input type="checkbox" id="includeSerialControl" checked>
+                        Include Serial Control
+                    </label>
+                </section>
+
+                <section class="panel-section">
+                    <h2>Actions</h2>
+                    <button id="generateBtn" class="btn btn-success">Generate Code</button>
+                    <button id="downloadBtn" class="btn btn-primary" disabled>Download Sketch</button>
+                    <button id="copyBtn" class="btn btn-secondary" disabled>Copy to Clipboard</button>
+                    <div class="import-export">
+                        <button id="exportConfigBtn" class="btn btn-small">Export Config</button>
+                        <button id="importConfigBtn" class="btn btn-small">Import Config</button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                    </div>
+                </section>
+
+                <section class="panel-section">
+                    <h2>🚀 Direct Upload to ESP32</h2>
+                    <div id="uploadStatus" class="upload-status">
+                        <span class="status-icon">⚡</span>
+                        <span id="statusText">Ready to upload</span>
+                    </div>
+                    <label>
+                        Select Port:
+                        <select id="portSelect">
+                            <option value="auto">Auto-detect</option>
+                        </select>
+                        <button id="refreshPortsBtn" class="btn btn-small">↻</button>
+                    </label>
+                    <label>
+                        Environment:
+                        <select id="environmentSelect">
+                            <option value="esp32_simulator">Simulator Mode</option>
+                            <option value="esp32_hardware">Hardware Mode</option>
+                        </select>
+                    </label>
+                    <button id="compileBtn" class="btn btn-warning" disabled>Compile Only</button>
+                    <button id="uploadBtn" class="btn btn-success" disabled>📤 Upload to ESP32</button>
+                    <div id="uploadProgress" class="upload-progress" style="display: none;">
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill"></div>
+                        </div>
+                        <pre id="uploadOutput" class="upload-output"></pre>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Middle: Live Preview -->
+            <div class="preview-panel">
+                <h2>Live Preview</h2>
+                <div class="preview-controls">
+                    <button id="previewBtn" class="btn btn-small">Preview Animation</button>
+                    <button id="stopPreviewBtn" class="btn btn-small">Stop</button>
+                </div>
+                <canvas id="previewCanvas"></canvas>
+                <div class="preview-info">
+                    <span id="totalLeds">Total LEDs: 0</span>
+                    <span id="totalStrips">Strips: 0</span>
+                </div>
+            </div>
+
+            <!-- Right Panel: Generated Code -->
+            <div class="code-panel">
+                <h2>Generated Code</h2>
+                <div class="code-tabs">
+                    <button class="code-tab active" data-tab="sketch">Arduino Sketch</button>
+                    <button class="code-tab" data-tab="platformio">platformio.ini</button>
+                    <button class="code-tab" data-tab="instructions">Instructions</button>
+                </div>
+                <pre id="codeOutput" class="code-output"><code>// Your generated code will appear here
+// 1. Configure your LED strips on the left
+// 2. Click "Generate Code"
+// 3. Copy or download the sketch
+// 4. Upload to your ESP32</code></pre>
+                <div id="instructionsPanel" class="instructions-panel" style="display: none;">
+                    <h3>How to Use Your Generated Code</h3>
+                    <ol>
+                        <li><strong>Download the sketch</strong> using the Download button</li>
+                        <li><strong>Install required libraries:</strong>
+                            <ul>
+                                <li>Adafruit NeoPixel</li>
+                                <li>The custom libraries from this project (StripManager, Effects, StripConfig)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Connect your ESP32</strong> to your computer</li>
+                        <li><strong>Upload the sketch:</strong>
+                            <pre>pio run -e esp32_simulator -t upload</pre>
+                            or use Arduino IDE
+                        </li>
+                        <li><strong>Open Serial Monitor</strong> at 115200 baud to see output</li>
+                    </ol>
+
+                    <h3>Serial Commands</h3>
+                    <ul>
+                        <li><code>i</code> - Show configuration info</li>
+                        <li><code>r</code> - Reset ESP32</li>
+                        <li><code>1-9</code> - Toggle strip 1-9 on/off</li>
+                        <li><code>h</code> - Show help</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strip Configuration Modal -->
+        <div id="stripModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Configure LED Strip</h3>
+                <label>
+                    Strip Name:
+                    <input type="text" id="modalStripName" placeholder="e.g., Front Strip">
+                </label>
+                <label>
+                    GPIO Pin:
+                    <select id="modalPin">
+                        <option value="5">GPIO 5 (Recommended)</option>
+                        <option value="18">GPIO 18</option>
+                        <option value="19">GPIO 19</option>
+                        <option value="21">GPIO 21</option>
+                        <option value="22">GPIO 22</option>
+                        <option value="23">GPIO 23</option>
+                        <option value="25">GPIO 25</option>
+                        <option value="26">GPIO 26</option>
+                        <option value="27">GPIO 27</option>
+                        <option value="32">GPIO 32</option>
+                        <option value="33">GPIO 33</option>
+                    </select>
+                </label>
+                <label>
+                    Number of LEDs:
+                    <input type="number" id="modalNumLeds" min="1" max="1000" value="30">
+                </label>
+                <label>
+                    Effect:
+                    <select id="modalEffect">
+                        <option value="rainbow">Rainbow</option>
+                        <option value="solid">Solid Color</option>
+                        <option value="chase">Chase</option>
+                        <option value="breathing">Breathing</option>
+                        <option value="sparkle">Sparkle</option>
+                        <option value="fire">Fire</option>
+                        <option value="wave">Wave</option>
+                        <option value="gradient">Gradient</option>
+                        <option value="strobe">Strobe</option>
+                        <option value="theater">Theater Chase</option>
+                    </select>
+                </label>
+                <div id="effectParams">
+                    <!-- Effect-specific parameters will be added here -->
+                </div>
+                <label>
+                    Brightness:
+                    <input type="range" id="modalBrightness" min="0" max="255" value="255">
+                    <span id="brightnessValue">255</span>
+                </label>
+                <div class="modal-buttons">
+                    <button id="modalSave" class="btn btn-primary">Save</button>
+                    <button id="modalCancel" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="code-generator-app.js"></script>
+</body>
+</html>

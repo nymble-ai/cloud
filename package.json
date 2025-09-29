@@ -5,6 +5,8 @@
   "scripts": {
     "sim": "cd simulator/visualizer && python3 -m http.server 8080",
     "bridge": "cd simulator/bridge && node server.js",
+    "upload-server": "cd simulator/upload-server && npm install && npm start",
+    "dev": "echo 'Start both servers: npm run sim (in one terminal) and npm run upload-server (in another)'",
     "build:hardware": "cd firmware && pio run -e esp32_hardware",
     "build:simulator": "cd firmware && pio run -e esp32_simulator",
     "build:matrix": "cd firmware && pio run -e esp32_matrix",
