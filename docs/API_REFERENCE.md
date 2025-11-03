@@ -131,6 +131,33 @@ Extracts blue component from packed color.
 
 ---
 
+## Multi-Strip Support
+
+The LED Display API now supports controlling multiple LED strips in parallel. See [MULTI_STRIP_GUIDE.md](MULTI_STRIP_GUIDE.md) for detailed documentation.
+
+### Quick Reference
+
+```cpp
+// Multi-strip simulator (3 strips of 90 LEDs each)
+LEDDisplaySimulatorMulti<90, 3> display;
+
+// Multi-strip hardware (3 strips on pins 5, 18, 19)
+PinArray<3> pins = {5, 18, 19};
+LEDDisplayHardwareMulti<90, 3, PinArray<3>> display(pins);
+
+// Control individual strips
+display.setStripPixel(0, 10, 255, 0, 0);  // Strip 0, pixel 10
+display.setStripPixel(1, 10, 0, 255, 0);  // Strip 1, pixel 10
+
+// Control all strips at once
+display.setAllStrips(10, 0, 0, 255);      // All strips, pixel 10
+
+// 2D coordinate system
+display.setPixel2D(10, 0, 255, 255, 0);   // x=10, y=0 (strip 0)
+```
+
+---
+
 ## LEDDisplayHardware
 
 Hardware implementation for physical ESP32 + WS2812B/WS2815 LEDs.

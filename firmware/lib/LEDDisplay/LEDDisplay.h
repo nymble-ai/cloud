@@ -29,6 +29,50 @@ public:
 
     virtual void fillColor(uint32_t color) = 0;
 
+    // Multi-strip support methods
+    virtual uint8_t getStripCount() { return 1; }
+
+    virtual uint16_t getPixelsPerStrip() { return getPixelCount(); }
+
+    virtual void setStripPixel(uint8_t strip, uint16_t index, uint8_t r, uint8_t g, uint8_t b) {
+        // Default implementation for backward compatibility
+        if (strip == 0) {
+            setPixel(index, r, g, b);
+        }
+    }
+
+    virtual void setStripPixelColor(uint8_t strip, uint16_t index, uint32_t color) {
+        // Default implementation for backward compatibility
+        if (strip == 0) {
+            setPixelColor(index, color);
+        }
+    }
+
+    virtual void setAllStrips(uint16_t index, uint8_t r, uint8_t g, uint8_t b) {
+        // Set the same pixel on all strips
+        for (uint8_t s = 0; s < getStripCount(); s++) {
+            setStripPixel(s, index, r, g, b);
+        }
+    }
+
+    virtual void setAllStripsColor(uint16_t index, uint32_t color) {
+        // Set the same pixel on all strips
+        for (uint8_t s = 0; s < getStripCount(); s++) {
+            setStripPixelColor(s, index, color);
+        }
+    }
+
+    // 2D coordinate system for parallel strips
+    virtual void setPixel2D(uint8_t x, uint8_t y, uint8_t r, uint8_t g, uint8_t b) {
+        // x = pixel position along strip, y = strip index
+        setStripPixel(y, x, r, g, b);
+    }
+
+    virtual void setPixelColor2D(uint8_t x, uint8_t y, uint32_t color) {
+        // x = pixel position along strip, y = strip index
+        setStripPixelColor(y, x, color);
+    }
+
     static uint32_t Color(uint8_t r, uint8_t g, uint8_t b) {
         return ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
     }

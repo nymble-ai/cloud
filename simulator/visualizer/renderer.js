@@ -19,7 +19,9 @@ export class LEDRenderer {
             width: 8,
             height: 8,
             serpentine: true,
-            radius: 150
+            radius: 150,
+            stripCount: 1,
+            stripSpacing: 30
         };
         this.positions = [];
         this.resizeCanvas();
@@ -34,7 +36,10 @@ export class LEDRenderer {
 
     setLayout(layout) {
         Object.assign(this.layout, layout);
-        this.leds = new Array(this.layout.count).fill(null).map(() => ({ r: 0, g: 0, b: 0 }));
+        const totalLeds = this.layout.type === 'parallel-strips'
+            ? this.layout.count * this.layout.stripCount
+            : this.layout.count;
+        this.leds = new Array(totalLeds).fill(null).map(() => ({ r: 0, g: 0, b: 0 }));
         this.resizeCanvas();
         this.calculatePositions();
     }
@@ -53,6 +58,18 @@ export class LEDRenderer {
                     requiredHeight = this.config.ledSize + 40;
                 } else {
                     requiredWidth = this.config.ledSize + 40;
+                    requiredHeight = this.layout.count * (this.config.ledSize + this.config.ledSpacing);
+                }
+                break;
+
+            case 'parallel-strips':
+                if (this.layout.orientation === 'horizontal') {
+                    requiredWidth = this.layout.count * (this.config.ledSize + this.config.ledSpacing);
+                    requiredHeight = (this.layout.stripCount * this.config.ledSize) +
+                                    ((this.layout.stripCount - 1) * this.layout.stripSpacing) + 40;
+                } else {
+                    requiredWidth = (this.layout.stripCount * this.config.ledSize) +
+                                   ((this.layout.stripCount - 1) * this.layout.stripSpacing) + 40;
                     requiredHeight = this.layout.count * (this.config.ledSize + this.config.ledSpacing);
                 }
                 break;
@@ -91,6 +108,9 @@ export class LEDRenderer {
         switch (this.layout.type) {
             case 'strip':
                 this.calculateStripPositions(padding);
+                break;
+            case 'parallel-strips':
+                this.calculateParallelStripPositions(padding);
                 break;
             case 'matrix':
                 this.calculateMatrixPositions(padding);
@@ -136,6 +156,30 @@ export class LEDRenderer {
                     x: padding + actualX * (ledSize + ledSpacing),
                     y: padding + y * (ledSize + ledSpacing)
                 });
+            }
+        }
+    }
+
+    calculateParallelStripPositions(padding) {
+        const ledSize = this.config.ledSize * this.scale;
+        const ledSpacing = this.config.ledSpacing * this.scale;
+        const stripSpacing = this.layout.stripSpacing * this.scale;
+
+        for (let strip = 0; strip < this.layout.stripCount; strip++) {
+            for (let i = 0; i < this.layout.count; i++) {
+                const ledIndex = strip * this.layout.count + i;
+
+                if (this.layout.orientation === 'horizontal') {
+                    this.positions[ledIndex] = {
+                        x: padding + i * (ledSize + ledSpacing),
+                        y: padding + strip * (ledSize + stripSpacing) + ledSize / 2
+                    };
+                } else {
+                    this.positions[ledIndex] = {
+                        x: padding + strip * (ledSize + stripSpacing) + ledSize / 2,
+                        y: padding + i * (ledSize + ledSpacing)
+                    };
+                }
             }
         }
     }
@@ -218,7 +262,10 @@ export class LEDRenderer {
     }
 
     clear() {
-        this.leds = new Array(this.layout.count).fill(null).map(() => ({ r: 0, g: 0, b: 0 }));
+        const totalLeds = this.layout.type === 'parallel-strips'
+            ? this.layout.count * this.layout.stripCount
+            : this.layout.count;
+        this.leds = new Array(totalLeds).fill(null).map(() => ({ r: 0, g: 0, b: 0 }));
         this.render();
     }
 

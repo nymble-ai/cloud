@@ -1,25 +1,18 @@
 /*
- * Parallel LED Strips Example - 10 Strips
+ * Parallel LED Strips Example
  *
- * This example demonstrates how to control 10 LED strips in parallel.
+ * This example demonstrates how to control multiple LED strips in parallel.
  * The animation creates synchronized wave patterns across all strips while
  * also showing individual strip control.
  *
- * Hardware Setup for 10 strips:
- * - Strip 1: GPIO 2
- * - Strip 2: GPIO 4
- * - Strip 3: GPIO 5
- * - Strip 4: GPIO 12
- * - Strip 5: GPIO 13
- * - Strip 6: GPIO 14
- * - Strip 7: GPIO 15
- * - Strip 8: GPIO 16
- * - Strip 9: GPIO 17
- * - Strip 10: GPIO 18
+ * Hardware Setup:
+ * - Strip 1: GPIO 5
+ * - Strip 2: GPIO 18
+ * - Strip 3: GPIO 19
  *
  * Simulator Setup:
  * - Set Layout Type to "Parallel Strips"
- * - Set Number of Strips to 10
+ * - Set Number of Strips to 3
  * - Adjust strip spacing as desired
  */
 
@@ -27,12 +20,12 @@
 
 // Configuration
 #define LEDS_PER_STRIP 90
-#define NUM_STRIPS 10
+#define NUM_STRIPS 3
 
 #ifdef HARDWARE_MODE
   #include <LEDDisplayHardwareMulti.h>
-  // Define the GPIO pins for each strip (10 strips)
-  PinArray<NUM_STRIPS> pins = {2, 4, 5, 12, 13, 14, 15, 16, 17, 18};
+  // Define the GPIO pins for each strip
+  PinArray<NUM_STRIPS> pins = {5, 18, 19};
   LEDDisplayHardwareMulti<LEDS_PER_STRIP, NUM_STRIPS, PinArray<NUM_STRIPS>> display(pins);
 #else
   #include <LEDDisplaySimulatorMulti.h>
@@ -45,21 +38,8 @@ uint8_t animationMode = 0;
 unsigned long lastModeChange = 0;
 const unsigned long MODE_DURATION = 5000; // Switch animation every 5 seconds
 
-// Forward declarations
-void synchronizedWave();
-void stripChase();
-void rainbowStrips();
-void crossFade();
-void gradientWave();
-uint32_t colorWheel(uint8_t pos);
-uint8_t sin8(uint8_t theta);
-
 void setup() {
     Serial.begin(115200);
-    delay(100);
-
-    // Don't print to Serial in simulator mode as it interferes with the protocol
-    #ifdef HARDWARE_MODE
     Serial.println("Parallel Strips Example Starting...");
     Serial.print("Number of strips: ");
     Serial.println(display.getStripCount());
@@ -67,7 +47,6 @@ void setup() {
     Serial.println(display.getPixelsPerStrip());
     Serial.print("Total LED count: ");
     Serial.println(display.getPixelCount());
-    #endif
 
     display.begin();
     display.setBrightness(100);
@@ -76,7 +55,7 @@ void setup() {
 void loop() {
     // Switch animation mode periodically
     if (millis() - lastModeChange > MODE_DURATION) {
-        animationMode = (animationMode + 1) % 5;
+        animationMode = (animationMode + 1) % 4;
         lastModeChange = millis();
         display.clear();
     }
@@ -93,9 +72,6 @@ void loop() {
             break;
         case 3:
             crossFade();
-            break;
-        case 4:
-            gradientWave();
             break;
     }
 
@@ -123,14 +99,13 @@ void stripChase() {
     uint16_t position = (waveOffset / 2) % display.getPixelsPerStrip();
 
     for (uint8_t strip = 0; strip < display.getStripCount(); strip++) {
-        // Each strip gets a different color (10 strips = 25.6 hue spacing)
+        // Each strip gets a different color
         uint8_t stripHue = (strip * 256 / display.getStripCount()) % 256;
         uint32_t color = colorWheel(stripHue);
 
-        // Draw chase pattern with offset per strip for wave effect
-        uint16_t stripOffset = (strip * 5); // Offset each strip slightly
+        // Draw chase pattern
         for (uint8_t i = 0; i < chaseLength; i++) {
-            uint16_t pixel = (position + i + stripOffset) % display.getPixelsPerStrip();
+            uint16_t pixel = (position + i) % display.getPixelsPerStrip();
             uint8_t brightness = 255 - (i * 255 / chaseLength);
             uint8_t r = ((color >> 16) & 0xFF) * brightness / 255;
             uint8_t g = ((color >> 8) & 0xFF) * brightness / 255;
@@ -143,7 +118,6 @@ void stripChase() {
 // Animation 3: Different rainbow offset per strip
 void rainbowStrips() {
     for (uint8_t strip = 0; strip < display.getStripCount(); strip++) {
-        // Create a gradient effect across the 10 strips
         uint16_t stripOffset = strip * 256 / display.getStripCount();
 
         for (uint16_t i = 0; i < display.getPixelsPerStrip(); i++) {
@@ -177,30 +151,6 @@ void crossFade() {
     }
 }
 
-// Animation 5: Gradient wave specific for 10 strips
-void gradientWave() {
-    for (uint8_t strip = 0; strip < display.getStripCount(); strip++) {
-        // Create vertical gradient effect
-        uint8_t stripBrightness = 255 - (strip * 255 / display.getStripCount());
-
-        for (uint16_t i = 0; i < display.getPixelsPerStrip(); i++) {
-            // Horizontal wave
-            uint16_t wavePos = (i + waveOffset) % display.getPixelsPerStrip();
-            uint8_t waveBrightness = (sin8(wavePos * 256 / display.getPixelsPerStrip()) + 1) / 2;
-
-            // Combine vertical gradient with horizontal wave
-            uint8_t combinedBrightness = (stripBrightness * waveBrightness) / 255;
-
-            // Color shifts from blue at top to red at bottom
-            uint8_t r = (strip * 255 / display.getStripCount()) * combinedBrightness / 255;
-            uint8_t g = 50 * combinedBrightness / 255; // Small amount of green
-            uint8_t b = (255 - (strip * 255 / display.getStripCount())) * combinedBrightness / 255;
-
-            display.setStripPixel(strip, i, r, g, b);
-        }
-    }
-}
-
 // Helper function: Convert hue (0-255) to RGB color
 uint32_t colorWheel(uint8_t pos) {
     pos = 255 - pos;
@@ -217,24 +167,24 @@ uint32_t colorWheel(uint8_t pos) {
 
 // Fast 8-bit sine approximation
 uint8_t sin8(uint8_t theta) {
-    // Simple sine approximation using integer math
-    uint16_t angle = theta;
-    uint8_t result;
-
-    if (angle < 64) {
-        // First quarter: 0 to 63 -> sine rises from 0 to 255
-        result = (angle * 4);
-    } else if (angle < 128) {
-        // Second quarter: 64 to 127 -> sine falls from 255 to 0
-        result = 255 - ((angle - 64) * 4);
-    } else if (angle < 192) {
-        // Third quarter: 128 to 191 -> sine falls from 0 to -255 (we use 0)
-        result = 0;
-    } else {
-        // Fourth quarter: 192 to 255 -> sine rises from -255 to 0 (we use 0)
-        result = 0;
-    }
-
-    // Shift to make it oscillate around 128 instead of 0
-    return (result / 2) + 64;
+    static const uint8_t sine_table[256] = {
+        128,131,134,137,140,143,146,149,152,155,158,161,164,167,170,173,
+        176,179,182,184,187,190,193,195,198,201,203,206,208,211,213,216,
+        218,220,223,225,227,229,231,233,235,237,239,241,243,244,246,248,
+        249,251,252,253,255,256,257,258,259,260,261,262,263,263,264,265,
+        265,266,266,266,267,267,267,267,267,267,267,267,266,266,266,265,
+        265,264,263,263,262,261,260,259,258,257,256,255,253,252,251,249,
+        248,246,244,243,241,239,237,235,233,231,229,227,225,223,220,218,
+        216,213,211,208,206,203,201,198,195,193,190,187,184,182,179,176,
+        173,170,167,164,161,158,155,152,149,146,143,140,137,134,131,128,
+        125,122,119,116,113,110,107,104,101,98,95,92,89,86,83,80,
+        77,74,72,69,66,63,61,58,55,53,50,48,45,43,40,38,
+        36,33,31,29,27,25,23,21,19,17,15,13,12,10,8,7,
+        5,4,3,2,1,0,0,0,0,0,0,0,0,1,1,1,
+        2,2,3,4,4,5,6,7,8,9,10,11,13,14,15,17,
+        18,20,22,23,25,27,29,31,33,35,37,39,42,44,46,49,
+        51,54,56,59,62,64,67,70,73,76,79,82,85,88,91,94,
+        97,100,103,106,109,112,115,118,121,124,127
+    };
+    return sine_table[theta];
 }

@@ -103,12 +103,15 @@ class SerialProtocolParser {
         this.FRAME_START = 0xFF;
         this.FRAME_END = 0xFE;
         this.ESCAPE_BYTE = 0xFD;
+        this.MULTI_STRIP_MARKER = 0xFC;  // New marker for multi-strip frames
 
         this.state = 'WAITING_START';
         this.buffer = [];
         this.ledCount = 0;
+        this.stripCount = 1;
         this.expectedBytes = 0;
         this.escaped = false;
+        this.isMultiStrip = false;
     }
 
     parse(byte) {
@@ -125,10 +128,12 @@ class SerialProtocolParser {
         }
 
         if (byte === this.FRAME_START) {
-            this.state = 'COUNT_HIGH';
+            this.state = 'FRAME_TYPE';
             this.buffer = [];
             this.ledCount = 0;
+            this.stripCount = 1;
             this.expectedBytes = 0;
+            this.isMultiStrip = false;
             return null;
         }
 
@@ -137,6 +142,22 @@ class SerialProtocolParser {
         }
 
         switch (this.state) {
+            case 'FRAME_TYPE':
+                if (byte === this.MULTI_STRIP_MARKER) {
+                    this.isMultiStrip = true;
+                    this.state = 'STRIP_COUNT';
+                } else {
+                    // Single strip frame, byte is COUNT_HIGH
+                    this.ledCount = byte << 8;
+                    this.state = 'COUNT_LOW';
+                }
+                break;
+
+            case 'STRIP_COUNT':
+                this.stripCount = byte;
+                this.state = 'COUNT_HIGH';
+                break;
+
             case 'COUNT_HIGH':
                 this.ledCount = byte << 8;
                 this.state = 'COUNT_LOW';
@@ -144,7 +165,8 @@ class SerialProtocolParser {
 
             case 'COUNT_LOW':
                 this.ledCount |= byte;
-                this.expectedBytes = this.ledCount * 3;
+                // For multi-strip, ledCount is per strip
+                this.expectedBytes = this.ledCount * 3 * (this.isMultiStrip ? this.stripCount : 1);
                 this.state = 'LED_DATA';
                 break;
 
@@ -186,7 +208,9 @@ class SerialProtocolParser {
         this.state = 'WAITING_START';
         this.buffer = [];
         this.ledCount = 0;
+        this.stripCount = 1;
         this.expectedBytes = 0;
         this.escaped = false;
+        this.isMultiStrip = false;
     }
 }

@@ -31,6 +31,11 @@ class LEDSimulatorApp {
             stripControls: document.getElementById('stripControls'),
             matrixControls: document.getElementById('matrixControls'),
             ringControls: document.getElementById('ringControls'),
+            parallelStripControls: document.getElementById('parallelStripControls'),
+            stripCount: document.getElementById('stripCount'),
+            stripSpacing: document.getElementById('stripSpacing'),
+            stripSpacingValue: document.getElementById('stripSpacingValue'),
+            parallelOrientation: document.getElementById('parallelOrientation'),
 
             ledSize: document.getElementById('ledSize'),
             ledSizeValue: document.getElementById('ledSizeValue'),
@@ -69,6 +74,14 @@ class LEDSimulatorApp {
             this.updateAppearance();
         });
 
+        // Add strip spacing listener
+        if (this.elements.stripSpacing) {
+            this.elements.stripSpacing.addEventListener('input', (e) => {
+                this.elements.stripSpacingValue.textContent = e.target.value;
+                this.applyLayout();
+            });
+        }
+
         this.elements.showIndices.addEventListener('change', () => this.updateAppearance());
         this.elements.backgroundColor.addEventListener('change', () => this.updateAppearance());
 
@@ -90,6 +103,7 @@ class LEDSimulatorApp {
         this.elements.stripControls.style.display = type === 'strip' ? 'block' : 'none';
         this.elements.matrixControls.style.display = type === 'matrix' ? 'block' : 'none';
         this.elements.ringControls.style.display = type === 'ring' ? 'block' : 'none';
+        this.elements.parallelStripControls.style.display = type === 'parallel-strips' ? 'block' : 'none';
 
         if (type === 'matrix') {
             const width = parseInt(this.elements.matrixWidth.value);
@@ -110,6 +124,12 @@ class LEDSimulatorApp {
         switch (type) {
             case 'strip':
                 layout.orientation = this.elements.orientation.value;
+                break;
+
+            case 'parallel-strips':
+                layout.stripCount = parseInt(this.elements.stripCount.value);
+                layout.stripSpacing = parseInt(this.elements.stripSpacing.value);
+                layout.orientation = this.elements.parallelOrientation.value;
                 break;
 
             case 'matrix':

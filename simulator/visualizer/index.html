@@ -28,13 +28,14 @@
                         Type:
                         <select id="layoutType">
                             <option value="strip">LED Strip</option>
+                            <option value="parallel-strips">Parallel Strips</option>
                             <option value="matrix">Matrix</option>
                             <option value="ring">Ring</option>
                         </select>
                     </label>
 
                     <label>
-                        LED Count:
+                        LED Count (per strip):
                         <input type="number" id="ledCount" value="90" min="1" max="1000">
                     </label>
 
@@ -42,6 +43,25 @@
                         <label>
                             Orientation:
                             <select id="orientation">
+                                <option value="horizontal">Horizontal</option>
+                                <option value="vertical">Vertical</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div id="parallelStripControls" class="layout-specific" style="display: none;">
+                        <label>
+                            Number of Strips:
+                            <input type="number" id="stripCount" value="3" min="1" max="16">
+                        </label>
+                        <label>
+                            Strip Spacing:
+                            <input type="range" id="stripSpacing" min="10" max="100" value="30">
+                            <span id="stripSpacingValue">30</span>px
+                        </label>
+                        <label>
+                            Orientation:
+                            <select id="parallelOrientation">
                                 <option value="horizontal">Horizontal</option>
                                 <option value="vertical">Vertical</option>
                             </select>
