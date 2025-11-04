@@ -13,6 +13,7 @@ Develop and test WS2812B/WS2815 LED animations in a virtual environment that beh
 - 🔧 **Multiple Layouts** - Strips, matrices, and rings supported
 - 📊 **Performance Metrics** - FPS counter and connection status
 - 🌈 **Example Animations** - Rainbow, chase, plasma, and more
+- 🎪 **NEW: Animation Editor** - Write JS animations in browser, export to Arduino!
 
 ## Quick Start
 
@@ -41,6 +42,45 @@ pio run -e esp32_simulator -t upload
 Click "Connect to Serial" in the visualizer and select your ESP32's port.
 
 Watch your animation come to life! 🎉
+
+## NEW: Animation Editor 🎪
+
+Test animations **instantly** without ESP32! Write JavaScript, export to Arduino.
+
+### Rapid Development Workflow
+
+```
+Write JS in Browser → Test Instantly → Export to Arduino → Upload to ESP32 → Deploy to LEDs
+   (no hardware)        (instant)         (one click)         (verify)        (done!)
+```
+
+### How to Use
+
+1. **Open the Visualizer** and click "Open Editor"
+2. **Select an example** or write your own animation
+3. **Click "Run Animation"** - see it instantly in the browser!
+4. **Click "Export to Arduino"** - get Arduino C++ code
+5. **Copy and upload** to ESP32
+
+### Example: Write Once
+
+```javascript
+// JavaScript (in browser editor)
+let hue = 0;
+
+function myAnimation() {
+  for (let i = 0; i < display.getPixelCount(); i++) {
+    let color = colorWheel((hue + i) & 0xFF);
+    display.setPixelColor(i, color);
+  }
+  display.show();
+  hue += 2;
+}
+```
+
+Click **Export** and you get ready-to-use Arduino code! 🚀
+
+See [Animation Editor Guide](docs/ANIMATION_EDITOR_GUIDE.md) for full documentation.
 
 ## Project Structure
 

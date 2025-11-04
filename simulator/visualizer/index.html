@@ -132,13 +132,87 @@
                     <button id="testRandom" class="btn btn-secondary">Random</button>
                     <button id="testClear" class="btn btn-secondary">Clear</button>
                 </section>
+
+                <section class="panel-section">
+                    <h2>🎨 Animation Editor</h2>
+                    <p class="help-text">Write animations in JavaScript, export to Arduino</p>
+                    <button id="toggleEditorBtn" class="btn btn-primary">Open Editor</button>
+                </section>
             </div>
 
             <div class="canvas-container">
                 <canvas id="ledCanvas"></canvas>
                 <div id="canvasOverlay" class="overlay">
                     <p>Click "Connect to Serial" to begin</p>
-                    <p class="help-text">Or use Test Mode to preview layouts</p>
+                    <p class="help-text">Or use Animation Editor to create patterns</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Animation Editor Panel (Hidden by default) -->
+        <div id="editorPanel" class="editor-panel" style="display: none;">
+            <div class="editor-header">
+                <h2>🎨 Animation Editor</h2>
+                <button id="closeEditorBtn" class="btn-icon">✕</button>
+            </div>
+
+            <div class="editor-content">
+                <div class="editor-controls">
+                    <label>
+                        Load Example:
+                        <select id="exampleSelect" class="editor-select">
+                            <option value="rainbow">Rainbow Cycle</option>
+                        </select>
+                    </label>
+
+                    <div class="editor-buttons">
+                        <button id="runAnimationBtn" class="btn btn-success">▶ Run Animation</button>
+                        <button id="stopAnimationBtn" class="btn btn-danger" disabled>⏹ Stop</button>
+                        <button id="exportArduinoBtn" class="btn btn-primary">📤 Export to Arduino</button>
+                    </div>
+
+                    <div id="editorStatus" class="editor-status"></div>
+                    <div id="editorError" class="editor-error" style="display: none;"></div>
+                </div>
+
+                <div class="editor-workspace">
+                    <div class="code-section">
+                        <h3>JavaScript Animation Code</h3>
+                        <textarea id="codeEditor" class="code-editor" spellcheck="false" placeholder="Write your animation code here..."></textarea>
+                    </div>
+
+                    <div class="output-section">
+                        <h3>Arduino Code Output</h3>
+                        <textarea id="arduinoOutput" class="code-output" readonly placeholder="Click 'Export to Arduino' to generate code..."></textarea>
+                        <button id="copyArduinoBtn" class="btn btn-secondary" style="display: none;">📋 Copy to Clipboard</button>
+                    </div>
+                </div>
+
+                <div class="editor-help">
+                    <details>
+                        <summary>📚 Quick Guide</summary>
+                        <div class="help-content">
+                            <h4>Available API Functions:</h4>
+                            <ul>
+                                <li><code>display.setPixel(i, r, g, b)</code> - Set LED color</li>
+                                <li><code>display.setPixelColor(i, color)</code> - Set with packed color</li>
+                                <li><code>display.show()</code> - Update display</li>
+                                <li><code>display.clear()</code> - Clear all LEDs</li>
+                                <li><code>display.fill(r, g, b)</code> - Fill all LEDs</li>
+                                <li><code>display.getPixelCount()</code> - Get LED count</li>
+                                <li><code>display.setBrightness(0-255)</code> - Set brightness</li>
+                                <li><code>colorWheel(0-255)</code> - Generate rainbow colors</li>
+                                <li><code>display.Color(r, g, b)</code> - Create packed color</li>
+                            </ul>
+                            <h4>Workflow:</h4>
+                            <ol>
+                                <li>Select an example or write your own</li>
+                                <li>Click "Run Animation" to test instantly</li>
+                                <li>Click "Export to Arduino" when ready</li>
+                                <li>Copy code and upload to ESP32</li>
+                            </ol>
+                        </div>
+                    </details>
                 </div>
             </div>
         </div>

@@ -1,11 +1,21 @@
+// TEST: This should appear immediately
+console.log('🔵 app.js is loading...');
+
 import { LEDRenderer } from './renderer.js';
 import { SerialBridge } from './serial-bridge.js';
+
+console.log('🔵 Basic imports loaded, trying AnimationEditor...');
+
+// Don't import AnimationEditor at the top - we'll import it dynamically later
+// import { AnimationEditor } from './AnimationEditor.js';
 
 class LEDSimulatorApp {
     constructor() {
         this.renderer = new LEDRenderer(document.getElementById('ledCanvas'));
         this.serialBridge = null;
         this.isConnected = false;
+        this.animationEditor = null;
+        this.editorOpen = false;
 
         this.initElements();
         this.initEventListeners();
@@ -49,7 +59,11 @@ class LEDSimulatorApp {
             testRainbow: document.getElementById('testRainbow'),
             testChase: document.getElementById('testChase'),
             testRandom: document.getElementById('testRandom'),
-            testClear: document.getElementById('testClear')
+            testClear: document.getElementById('testClear'),
+
+            toggleEditorBtn: document.getElementById('toggleEditorBtn'),
+            closeEditorBtn: document.getElementById('closeEditorBtn'),
+            editorPanel: document.getElementById('editorPanel')
         };
     }
 
@@ -90,11 +104,77 @@ class LEDSimulatorApp {
         this.elements.testRandom.addEventListener('click', () => this.renderer.testPattern('random'));
         this.elements.testClear.addEventListener('click', () => this.renderer.clear());
 
+        // Animation Editor controls
+        console.log('Setting up editor button:', this.elements.toggleEditorBtn);
+        if (this.elements.toggleEditorBtn) {
+            this.elements.toggleEditorBtn.addEventListener('click', () => {
+                console.log('Open Editor clicked!');
+                this.toggleEditor();
+            });
+        } else {
+            console.error('toggleEditorBtn not found!');
+        }
+        
+        if (this.elements.closeEditorBtn) {
+            this.elements.closeEditorBtn.addEventListener('click', () => this.closeEditor());
+        }
+
         window.addEventListener('resize', () => {
             this.renderer.resizeCanvas();
             this.renderer.calculatePositions();
             this.renderer.render();
         });
+    }
+
+    toggleEditor() {
+        console.log('toggleEditor called, editorOpen:', this.editorOpen);
+        if (this.editorOpen) {
+            this.closeEditor();
+        } else {
+            this.openEditor();
+        }
+    }
+
+    async openEditor() {
+        console.log('openEditor called');
+        console.log('editorPanel element:', this.elements.editorPanel);
+        
+        // Initialize editor on first open (lazy loading with dynamic import)
+        if (!this.animationEditor) {
+            console.log('Initializing AnimationEditor...');
+            try {
+                // Dynamic import to avoid loading errors at startup
+                const { AnimationEditor } = await import('./AnimationEditor.js');
+                console.log('AnimationEditor module loaded');
+                
+                this.animationEditor = new AnimationEditor(this.renderer);
+                console.log('AnimationEditor initialized successfully');
+            } catch (error) {
+                console.error('Error initializing AnimationEditor:', error);
+                alert('Error loading Animation Editor: ' + error.message);
+                return;
+            }
+        }
+        
+        if (this.elements.editorPanel) {
+            this.elements.editorPanel.style.display = 'block';
+            this.editorOpen = true;
+            this.elements.toggleEditorBtn.textContent = 'Close Editor';
+            console.log('Editor panel should now be visible');
+        } else {
+            console.error('editorPanel element not found!');
+        }
+    }
+
+    closeEditor() {
+        this.elements.editorPanel.style.display = 'none';
+        this.editorOpen = false;
+        this.elements.toggleEditorBtn.textContent = 'Open Editor';
+        
+        // Stop any running animation
+        if (this.animationEditor && this.animationEditor.isRunning) {
+            this.animationEditor.stopAnimation();
+        }
     }
 
     updateLayoutControls() {
