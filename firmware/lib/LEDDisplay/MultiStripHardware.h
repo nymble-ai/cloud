@@ -16,9 +16,9 @@ public:
         // Initialize each NeoPixel strip
         for (size_t i = 0; i < strips.size(); i++) {
             auto& config = strips[i];
-            auto strip = std::make_unique<Adafruit_NeoPixel>(
+            std::unique_ptr<Adafruit_NeoPixel> strip(new Adafruit_NeoPixel(
                 config.numLEDs, config.pin, NEO_GRB + NEO_KHZ800
-            );
+            ));
             strip->begin();
             strip->setBrightness(brightness);
             strip->clear();
