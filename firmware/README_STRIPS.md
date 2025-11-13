@@ -180,6 +180,60 @@ pio run -e esp32_hardware -t upload
 4. **Common Ground**: Connect ESP32 GND to LED power GND
 5. **Use Resistors**: 470Ω on data lines recommended
 
+## ⚠️ Color Calibration Notes - CRITICAL
+
+**IMPORTANT**: These LED strips have **RED and GREEN channels SWAPPED**!
+
+### Correct Color Mapping:
+```cpp
+// To display RED, use GREEN channel:
+uint8_t red_r = 0, red_g = 255, red_b = 0;     // Shows RED
+
+// To display GREEN, use RED channel:
+uint8_t green_r = 255, green_g = 0, green_b = 0;  // Shows GREEN
+
+// BLUE is correct:
+uint8_t blue_r = 0, blue_g = 0, blue_b = 255;     // Shows BLUE
+
+// WHITE needs all channels:
+uint8_t white_r = 255, white_g = 255, white_b = 255;  // Shows WHITE
+```
+
+### Known Issues:
+- **Orange (255, 140, 0)** appears as **neon yellowish-green** on hardware
+- Standard RGB values will show WRONG colors unless channels are swapped
+- This is likely a hardware wiring issue or LED chipset configuration
+
+### Best Practices:
+1. **Always swap R and G channels** when setting colors
+2. Test all colors on actual hardware before finalizing
+3. Create color calibration test patterns first
+4. Document any color adjustments made for your specific setup
+
+## 📐 Geometric Pattern Guidelines
+
+**IMPORTANT**: These LED strips have limited resolution for complex geometry!
+
+### What Works Well:
+- **Concentric circles/rings** with clear spacing (5+ pixel gaps)
+- **Radial spokes** (4-fold or 8-fold symmetry)
+- **Bold lines** (2-3 pixels thick minimum)
+- **High contrast borders** (white outlines on colored shapes)
+- **Simple shapes**: circles, squares, diamonds at intersections
+
+### What Doesn't Work:
+- ❌ Fine details or intricate patterns (grid is only 90x10)
+- ❌ Thin lines (1 pixel) - hard to see
+- ❌ Complex curves without clear structure
+- ❌ Subtle gradients blending into background
+
+### Mandala/Geometric Best Practices:
+1. **Use clear structure**: Rings + spokes + intersection points
+2. **High contrast**: Bright borders (white) on colored fills
+3. **Bold shapes**: Make elements 2-3 pixels thick
+4. **Test visibility**: If you can't see it clearly at 2 feet away, it's too subtle
+5. **Pulse/animate**: Movement helps define geometry that's hard to see when static
+
 ## 🎮 Interactive Control
 
 The DynamicStrips example supports serial commands:
